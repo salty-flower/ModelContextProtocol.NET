@@ -1,0 +1,12 @@
+plugins: ["@prettier/plugin-xml"]
+
+tabWidth: 2
+endOfLine: "crlf"
+printWidth: 80
+xmlQuoteAttributes: "double"
+xmlSelfClosingSpace: true
+xmlSortAttributesByKey: true
+xmlWhitespaceSensitivity: "ignore"
+trailingComma: "none"
+semi: false
+singleQuote: false

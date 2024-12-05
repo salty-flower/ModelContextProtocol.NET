@@ -1,0 +1,36 @@
+<Project>
+  <!-- Compiler settings -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <UseCurrentRuntimeIdentifier>true</UseCurrentRuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+  </PropertyGroup>
+
+  <!-- Solution properties -->
+  <PropertyGroup>
+    <SolutionDir Condition="'$(SolutionDir)' == ''">
+      $(MSBuildThisFileDirectory)
+    </SolutionDir>
+    <SolutionDir>$(SolutionDir.Trim())</SolutionDir>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ArtifactsPath>$(SolutionDir)build</ArtifactsPath>
+  </PropertyGroup>
+
+  <!-- Weaver settings -->
+  <PropertyGroup>
+    <WeaverConfiguration>
+      <Weavers>
+        <Janitor />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)Package.props" />
+</Project>

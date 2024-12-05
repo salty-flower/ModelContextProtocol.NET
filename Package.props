@@ -1,0 +1,46 @@
+<Project>
+  <!-- Package Metadata -->
+  <PropertyGroup>
+    <!-- Documentation -->
+    <Version>0.1.0-alpha</Version>
+    <Authors>salty-flower</Authors>
+    <Description>
+      A C# SDK implementation of the Model Context Protocol (MCP)
+    </Description>
+    <PackageTags>MCP;SDK;ModelContextProtocol;AI;LLM</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Source -->
+    <PackageSourceLink>
+      https://github.com/salty-flower/ModelContextProtocol.NET
+    </PackageSourceLink>
+    <PackageProjectUrl>$(PackageSourceLink.Trim())</PackageProjectUrl>
+    <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <!-- Symbols -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>
+      $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
+    </AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+    <!-- License -->
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Packing Settings -->
+  <ItemGroup>
+    <None
+      Include="$(MSBuildThisFileDirectory)README.md"
+      Pack="true"
+      PackagePath="/"
+    />
+  </ItemGroup>
+</Project>

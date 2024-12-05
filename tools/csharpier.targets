@@ -1,0 +1,33 @@
+<Project>
+  <PropertyGroup>
+    <CsharpSourceDir>$(SolutionDir)src</CsharpSourceDir>
+  </PropertyGroup>
+
+  <Target Name="EnsureCSharpier">
+    <Exec
+      Command="dotnet csharpier --version"
+      IgnoreExitCode="true"
+      StandardErrorImportance="high"
+      StandardOutputImportance="low"
+    >
+      <Output PropertyName="CSharpierExists" TaskParameter="ExitCode" />
+    </Exec>
+
+    <Error
+      Condition="'$(CSharpierExists)' != '0'"
+      Text="dotnet-csharpier is required but not found. Please install it via 'dotnet tool install -g csharpier' or visit https://www.nuget.org/packages/CSharpier/"
+    />
+  </Target>
+
+  <Target
+    BeforeTargets="Restore"
+    DependsOnTargets="EnsureCSharpier"
+    Name="FormatCSharpier"
+  >
+    <Exec
+      Command="dotnet csharpier $(CsharpSourceDir)"
+      StandardErrorImportance="high"
+      StandardOutputImportance="low"
+    />
+  </Target>
+</Project>

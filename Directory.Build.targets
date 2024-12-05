@@ -1,0 +1,37 @@
+<Project>
+  <ItemGroup>
+    <Compile Remove="build\**" />
+    <Content Remove="build\**" />
+    <EmbeddedResource Remove="build\**" />
+    <None Remove="build\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Programming -->
+    <!-- IDisposable -->
+    <PackageReference Include="Fody">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>
+        runtime; build; native; contentfiles; analyzers; buildtransitive
+      </IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Janitor.Fody">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Logging -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <!-- Source Link -->
+    <PackageReference
+      Condition="'$(ContinuousIntegrationBuild)' == 'true' and '$(Configuration)' == 'Release'"
+      Include="Microsoft.SourceLink.GitHub"
+      PrivateAssets="All"
+    />
+  </ItemGroup>
+
+  <!-- prettier settings -->
+  <Import
+    Project="$(MSBuildThisFileDirectory)tools/prettier/prettier.targets"
+  />
+  <!-- csharpier settings -->
+  <Import Project="$(MSBuildThisFileDirectory)tools/csharpier.targets" />
+</Project>
