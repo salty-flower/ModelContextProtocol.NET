@@ -2,8 +2,6 @@ name: Generate workflows
 
 on:
   push:
-    branches:
-      - build/github-actions-test
     paths:
       - ".github/real-workflows/*.yml"
       - ".github/workflows/generate-workflows.yml"
