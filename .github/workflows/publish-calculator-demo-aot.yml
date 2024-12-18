@@ -29,7 +29,7 @@ jobs:
       - name: Upload ${{ matrix.name }} Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: artifacts/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+          path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
           name: ${{ matrix.name }}-build
           compression-level: 0
   build-docker-arm64:
@@ -45,7 +45,7 @@ jobs:
             platform: linux/arm64
             tag: 9.0-noble-aot-arm64v8
       fail-fast: false
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     container:
       image: mcr.microsoft.com/dotnet/nightly/sdk:${{ matrix.tag }}
@@ -57,7 +57,7 @@ jobs:
       - name: Upload ${{ matrix.target }} Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: artifacts/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+          path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
           name: ${{ matrix.name }}-build
           compression-level: 0
   build-docker-amd64:
@@ -81,7 +81,7 @@ jobs:
       - name: Upload ${{ matrix.target }} Artifact
         uses: actions/upload-artifact@v4
         with:
-          path: artifacts/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+          path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
           name: ${{ matrix.name }}-build
           compression-level: 0
   create-prelease:
