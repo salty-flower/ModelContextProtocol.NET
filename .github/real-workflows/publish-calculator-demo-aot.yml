@@ -39,6 +39,9 @@ on:
   push:
     branches:
       - build/github-actions-test
+    tags:
+      - "v*"
+      - "ci*"
   workflow_dispatch:
 
 jobs:
