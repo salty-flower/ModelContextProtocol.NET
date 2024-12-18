@@ -1,4 +1,4 @@
-name: Generate real-workflows
+name: Generate workflows
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - build/github-actions-test
     paths:
       - ".github/real-workflows/*.yml"
+      - ".github/workflows/generate-workflows.yml"
 
 jobs:
   generate-workflows:
