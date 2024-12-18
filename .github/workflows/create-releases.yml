@@ -45,7 +45,7 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::Demo-Calculator-${{ inputs.custom-tag }}-$(date +"%Y.%m.%d-%H:%M")"
+          echo "::set-output name=release_tag::Demo-Calculator-${{ inputs.custom-tag }}-$(date +"%Y.%m.%d-%H-%M")"
       - name: Create GitHub pre-release
         uses: softprops/action-gh-release@v2
         with:

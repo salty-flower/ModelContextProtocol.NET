@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     <<: *use-docker-sdk-with-matrix
   
-  create-prelease:
+  create-prerelease:
     permissions:
       contents: write
     needs: [build-native, build-docker-amd64]
