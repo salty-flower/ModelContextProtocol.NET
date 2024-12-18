@@ -7,7 +7,7 @@ dotnet_setup: &dotnet_setup
 upload_artifact: &upload_artifact
   uses: actions/upload-artifact@v4
   with:
-    path: artifacts/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+    path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
     name: ${{ matrix.name }}-build
     compression-level: 0
 
