@@ -1,11 +1,9 @@
 name: Publish AOT Builds
 on:
   push:
-    branches:
-      - build/github-actions-test
     tags:
       - "v*"
-      - "ci*"
+      - "v-demo*"
   workflow_dispatch:
 jobs:
   build-native:
