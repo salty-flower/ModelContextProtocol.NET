@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - build/github-actions-test
+    tags:
+      - "v*"
+      - "ci*"
   workflow_dispatch:
 jobs:
   build-native:
@@ -32,34 +35,22 @@ jobs:
           path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
           name: ${{ matrix.name }}-build
           compression-level: 0
-  build-docker-arm64:
-    strategy:
-      matrix:
-        include:
-          - target: linux-musl-arm64
-            name: linux-musl-arm64
-            platform: linux/arm64
-            tag: 9.0-alpine-aot-arm64v8
-          - target: linux-arm64
-            name: linux-arm64
-            platform: linux/arm64
-            tag: 9.0-noble-aot-arm64v8
-      fail-fast: false
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    container:
-      image: mcr.microsoft.com/dotnet/nightly/sdk:${{ matrix.tag }}
-      options: --platform ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build ${{ matrix.target }}
-        run: dotnet publish
-      - name: Upload ${{ matrix.target }} Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
-          name: ${{ matrix.name }}-build
-          compression-level: 0
+  # build-docker-arm64:
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - target: linux-musl-arm64
+  #           name: linux-musl-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-alpine-aot-arm64v8
+  #         - target: linux-arm64
+  #           name: linux-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-noble-aot-arm64v8
+  #     <<: *no-fail-fast-strategy
+
+  #   runs-on: macos-latest
+  #   <<: *use-docker-sdk-with-matrix
   build-docker-amd64:
     strategy:
       matrix:
@@ -87,7 +78,7 @@ jobs:
   create-prelease:
     permissions:
       contents: write
-    needs: [build-native, build-docker-arm64, build-docker-amd64]
+    needs: [build-native, build-docker-amd64]
     uses: ./.github/workflows/create-releases.yml
     with:
       workflow-file: "publish-calculator-demo-aot.yml"
