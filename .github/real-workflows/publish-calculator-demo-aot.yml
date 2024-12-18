@@ -65,22 +65,22 @@ jobs:
       - name: Upload ${{ matrix.name }} Artifact
         <<: *upload_artifact
 
-  build-docker-arm64:
-    strategy:
-      matrix:
-        include:
-          - target: linux-musl-arm64
-            name: linux-musl-arm64
-            platform: linux/arm64
-            tag: 9.0-alpine-aot-arm64v8
-          - target: linux-arm64
-            name: linux-arm64
-            platform: linux/arm64
-            tag: 9.0-noble-aot-arm64v8
-      <<: *no-fail-fast-strategy
+  # build-docker-arm64:
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - target: linux-musl-arm64
+  #           name: linux-musl-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-alpine-aot-arm64v8
+  #         - target: linux-arm64
+  #           name: linux-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-noble-aot-arm64v8
+  #     <<: *no-fail-fast-strategy
   
-    runs-on: ubuntu-latest
-    <<: *use-docker-sdk-with-matrix
+  #   runs-on: macos-latest
+  #   <<: *use-docker-sdk-with-matrix
 
   build-docker-amd64:
     strategy:
@@ -99,7 +99,7 @@ jobs:
   create-prelease:
     permissions:
       contents: write
-    needs: [build-native, build-docker-arm64, build-docker-amd64]
+    needs: [build-native, build-docker-amd64]
     uses: ./.github/workflows/create-releases.yml
     with:
       workflow-file: "publish-calculator-demo-aot.yml"
