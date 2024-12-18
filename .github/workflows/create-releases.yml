@@ -31,13 +31,13 @@ jobs:
             platform=$(echo $dir | cut -d'-' -f1)
             case $platform in
               linux)
-                cp "$dir"/ModelContextProtocol.NET "release_assets/ModelContextProtocol.NET-$dir"
+                cp "$dir"/ModelContextProtocol.NET.Demo.Calculator "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir"
                 ;;
               windows)
-                cp "$dir"/ModelContextProtocol.NET* "release_assets/ModelContextProtocol.NET-$dir.exe"
+                cp "$dir"/ModelContextProtocol.NET.Demo.Calculator.exe "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir.exe"
                 ;;
               macos)
-                find "$dir" -type f -not -name "*.dSYM" -exec cp {} "release_assets/ModelContextProtocol.NET-$dir" \;
+                find "$dir" -type f -not -name "*.dSYM" -exec cp {} "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir" \;
                 ;;
             esac
           done
