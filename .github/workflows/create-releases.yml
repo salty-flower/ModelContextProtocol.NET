@@ -1,0 +1,57 @@
+name: Create Releases
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      workflow-file:
+        type: string
+        required: true
+      custom-tag:
+        type: string
+        required: false
+
+jobs:
+  create-prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ${{ inputs.workflow-file }}
+          workflow_conclusion: success
+          run_id: ${{ github.run_id }}
+          run_number: ${{ github.run_number }}
+
+      - name: Prepare release assets
+        run: |
+          mkdir release_assets
+          for dir in *-build; do
+            platform=$(echo $dir | cut -d'-' -f1)
+            case $platform in
+              linux)
+                cp "$dir"/ModelContextProtocol.NET.Demo.Calculator "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir"
+                ;;
+              windows)
+                cp "$dir"/ModelContextProtocol.NET.Demo.Calculator.exe "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir.exe"
+                ;;
+              macos)
+                find "$dir" -type f -not -name "*.dSYM" -exec cp {} "release_assets/ModelContextProtocol.NET.Demo.Calculator-$dir" \;
+                ;;
+            esac
+          done
+          ls -laR release_assets
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::Demo-Calculator-${{ inputs.custom-tag }}-$(date +"%Y.%m.%d-%H-%M")"
+      - name: Create GitHub pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_assets/*
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          prerelease: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

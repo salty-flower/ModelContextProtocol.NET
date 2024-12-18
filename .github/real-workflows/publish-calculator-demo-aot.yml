@@ -1,0 +1,107 @@
+dotnet_setup: &dotnet_setup
+  name: Setup .NET
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: "9"
+
+upload_artifact: &upload_artifact
+  uses: actions/upload-artifact@v4
+  with:
+    path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+    name: ${{ matrix.name }}-build
+    compression-level: 0
+
+timeout-limit: &timeout-limit
+  timeout-minutes: 10
+
+no-fail-fast-strategy: &no-fail-fast-strategy
+  fail-fast: false
+
+use-docker-sdk-with-matrix: &use-docker-sdk-with-matrix
+  <<: *timeout-limit
+
+  container:
+    image: mcr.microsoft.com/dotnet/nightly/sdk:${{ matrix.tag }}
+    options: --platform ${{ matrix.platform }}
+
+  steps:
+    - uses: actions/checkout@v4
+    - name: Build ${{ matrix.target }}
+      run: dotnet publish
+    - name: Upload ${{ matrix.target }} Artifact
+      <<: *upload_artifact
+
+---
+
+name: Publish AOT Builds
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "v-demo*"
+  workflow_dispatch:
+
+jobs:
+  build-native:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: ubuntu-latest
+            name: linux
+          - os: macos-latest
+            name: macos
+      <<: *no-fail-fast-strategy
+    
+    runs-on: ${{ matrix.os }}
+    <<: *timeout-limit
+    
+    steps:
+      - uses: actions/checkout@v4
+      - *dotnet_setup
+      - name: Build ${{ matrix.name }}
+        run: dotnet publish
+      - name: Upload ${{ matrix.name }} Artifact
+        <<: *upload_artifact
+
+  # build-docker-arm64:
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - target: linux-musl-arm64
+  #           name: linux-musl-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-alpine-aot-arm64v8
+  #         - target: linux-arm64
+  #           name: linux-arm64
+  #           platform: linux/arm64
+  #           tag: 9.0-noble-aot-arm64v8
+  #     <<: *no-fail-fast-strategy
+  
+  #   runs-on: macos-latest
+  #   <<: *use-docker-sdk-with-matrix
+
+  build-docker-amd64:
+    strategy:
+      matrix:
+        include:
+          - target: linux-musl-x64
+            name: linux-musl-x64
+            platform: linux/amd64
+            tag: 9.0-alpine-aot-amd64
+
+      <<: *no-fail-fast-strategy
+
+    runs-on: ubuntu-latest
+    <<: *use-docker-sdk-with-matrix
+  
+  create-prerelease:
+    permissions:
+      contents: write
+    needs: [build-native, build-docker-amd64]
+    uses: ./.github/workflows/create-releases.yml
+    with:
+      workflow-file: "publish-calculator-demo-aot.yml"
+      custom-tag: "NativeAOT"
