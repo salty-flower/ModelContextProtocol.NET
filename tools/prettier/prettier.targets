@@ -12,20 +12,25 @@
       $(MSBuildThisFileDirectory)../../**/*.{$(Extensions.Trim())}
     </WriteGlob>
     <IgnoreGlob>
-      $([MSBuild]::MakeRelative($(PrettierDir), $(ArtifactsPath)));
-        **/bin/**;
-        **/obj/**
+      $(SolutionDir).github/real-workflows/**;
+      $(ArtifactsPath);
+      **/bin/**;
+      **/obj/**
     </IgnoreGlob>
   </PropertyGroup>
 
   <!-- Generate .prettierignore file -->
-  <Target BeforeTargets="FormatXml" Name="GeneratePrettierIgnore">
+  <Target Name="GeneratePrettierIgnore">
     <ItemGroup>
       <!-- Split and create items, then transform paths -->
       <_RawIgnoreLines Include="$(IgnoreGlob.Split(';'))" />
-      <IgnoreLines
+      <_RelativeIgnoreLines
         Include="@(_RawIgnoreLines)"
-        NormalizedPath="$([System.String]::new('%(Identity)').Replace('\', '/'))"
+        RelativePath="$([MSBuild]::MakeRelative($(PrettierDir),'%(Identity)'))"
+      />
+      <IgnoreLines
+        Include="@(_RelativeIgnoreLines)"
+        NormalizedPath="$([System.String]::new('%(RelativePath)').Replace('\', '/'))"
       />
     </ItemGroup>
 
@@ -100,7 +105,7 @@
 
   <Target
     BeforeTargets="Restore"
-    DependsOnTargets="RestorePrettierTools"
+    DependsOnTargets="RestorePrettierTools;GeneratePrettierIgnore"
     Name="FormatPrettier"
   >
     <Exec
