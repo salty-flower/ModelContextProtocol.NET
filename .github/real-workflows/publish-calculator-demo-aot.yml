@@ -79,7 +79,7 @@ jobs:
             tag: 9.0-noble-aot-arm64v8
       <<: *no-fail-fast-strategy
   
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     <<: *use-docker-sdk-with-matrix
 
   build-docker-amd64:
