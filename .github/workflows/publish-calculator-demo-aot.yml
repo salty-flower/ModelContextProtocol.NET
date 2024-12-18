@@ -85,6 +85,8 @@ jobs:
           name: ${{ matrix.name }}-build
           compression-level: 0
   create-prelease:
+    permissions:
+      contents: write
     needs: [build-native, build-docker-arm64, build-docker-amd64]
     uses: ./.github/workflows/create-releases.yml
     with:
