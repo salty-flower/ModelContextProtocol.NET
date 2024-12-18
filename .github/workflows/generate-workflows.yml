@@ -1,0 +1,17 @@
+name: Generate real-workflows
+
+on:
+  push:
+    branches:
+      - build/github-actions-test
+    paths:
+      - ".github/real-workflows/*.yml"
+
+jobs:
+  generate-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run locally
+        uses: "DanySK/true-yaml-actions@1.0.5" # pick the latest version maybe
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
