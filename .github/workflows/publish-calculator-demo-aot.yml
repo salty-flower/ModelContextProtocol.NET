@@ -73,7 +73,7 @@ jobs:
           path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
           name: ${{ matrix.name }}-build
           compression-level: 0
-  create-prelease:
+  create-prerelease:
     permissions:
       contents: write
     needs: [build-native, build-docker-amd64]
