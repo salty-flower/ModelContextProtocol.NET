@@ -1,5 +1,7 @@
 # ModelContextProtocol.NET
 
+![NuGet Version](https://img.shields.io/nuget/vpre/ModelContextProtocol.NET.Server)
+
 A C# SDK implementation of the Model Context Protocol (MCP), enabling seamless integration between AI models and development environments.
 
 ## Overview
@@ -9,12 +11,14 @@ ModelContextProtocol.NET is a native .NET implementation of the Model Context Pr
 ## Features
 
 ### Ready to Use
+
 - ✅ Standard I/O Communication
 - ✅ Tool Integration Framework
 - ✅ Native AOT Compatible
 - ✅ Calculator Demo Implementation
 
 ### Under Development
+
 - 🚧 WebSocket Support
 - 🚧 Resource Management
 - 🚧 Prompt System
@@ -26,19 +30,29 @@ The repository includes a fully functional calculator demo that showcases the ba
 ## Technical Details
 
 ### Architecture
+
 The project is structured into multiple components:
+
 - **Core Library**: Contains the fundamental protocol implementation
 - **Server Components**: Handles communication and request processing
 - **Demo Implementation**: Provides a working example with a calculator application
 
 ### Key Benefits
+
 - **Native AOT Support**: Fully compatible with .NET Native AOT compilation for optimal performance
 - **Modular Design**: Clean separation of concerns allowing for flexible implementation
 - **Standard Compliance**: Implements the Model Context Protocol specification
 
 ## Getting Started
 
-The easiest way to get started is to look at the calculator demo in `src/ModelContextProtocol.NET.Demo.Calculator`. Here's a quick example of how to set up an MCP server:
+Install [the server package](https://www.nuget.org/packages/ModelContextProtocol.NET.Server):
+
+```bash
+dotnet add package ModelContextProtocol.NET.Server
+```
+
+The easiest way to get started is to look at the calculator demo in `src/ModelContextProtocol.NET.Demo.Calculator`.
+Here's a quick example of how to set up an MCP server:
 
 ```csharp
 // Create server info
@@ -88,6 +102,7 @@ public enum CalculatorOperation { Add, Subtract, Multiply, Divide }
 ```
 
 Check out the complete calculator demo for a full working example including:
+
 - Tool handler implementation
 - Request/response handling
 - Error management
