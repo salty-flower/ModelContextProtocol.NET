@@ -13,6 +13,9 @@
     <PackageReference Include="Serilog.Extensions.Logging" />
     <PackageReference Include="Serilog.Sinks.File" />
     <ProjectReference
+      Include="..\ModelContextProtocol.NET.Core\ModelContextProtocol.NET.Core.csproj"
+    />
+    <ProjectReference
       Include="..\ModelContextProtocol.NET.Server\ModelContextProtocol.NET.Server.csproj"
     />
   </ItemGroup>
