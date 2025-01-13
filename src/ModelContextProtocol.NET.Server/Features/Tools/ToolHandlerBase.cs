@@ -20,13 +20,15 @@ public abstract class ToolHandlerBase<TParams>(
 ) : IToolHandler
     where TParams : class
 {
-    protected Tool Tool { get; init; } = tool;
     protected IServerContext ServerContext { get; init; } = serverContext;
     protected ISessionContext SessionContext { get; init; } = sessionContext;
 
     public abstract JsonTypeInfo JsonTypeInfo { get; }
 
-    Tool IToolHandler.Tool => Tool;
+    protected ToolHandlerBase(Tool tool)
+        : this(tool, null, null) { }
+
+    public Tool Tool => tool;
 
     /// <summary>
     /// Handles a tool invocation with strongly-typed parameters.

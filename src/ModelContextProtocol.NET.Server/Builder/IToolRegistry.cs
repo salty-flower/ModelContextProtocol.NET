@@ -16,4 +16,7 @@ public interface IToolRegistry
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler
     >()
         where THandler : class, IToolHandler;
+
+    IToolRegistry AddHandler<THandler>(THandler instance)
+        where THandler : class, IToolHandler;
 }

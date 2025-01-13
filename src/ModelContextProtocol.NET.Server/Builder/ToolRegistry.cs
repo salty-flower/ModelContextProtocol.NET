@@ -14,4 +14,11 @@ internal class ToolRegistry(IServiceCollection services) : IToolRegistry
         services.AddTransient<IToolHandler, THandler>();
         return this;
     }
+
+    public IToolRegistry AddHandler<THandler>(THandler instance)
+        where THandler : class, IToolHandler
+    {
+        services.AddSingleton<IToolHandler>(instance);
+        return this;
+    }
 }
