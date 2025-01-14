@@ -15,13 +15,15 @@ namespace ModelContextProtocol.NET.Server.Features.Tools;
 /// </summary>
 public abstract class ToolHandlerBase<TParams>(
     Tool tool,
-    IServerContext serverContext,
-    ISessionContext sessionContext
+#pragma warning disable CS9113 // Parameter is unread.
+    IServerContext? serverContext,
+    ISessionContext? sessionContext
+#pragma warning restore CS9113 // Parameter is unread.
 ) : IToolHandler
     where TParams : class
 {
-    protected IServerContext ServerContext { get; init; } = serverContext;
-    protected ISessionContext SessionContext { get; init; } = sessionContext;
+    protected IServerContext? ServerContext => serverContext;
+    protected ISessionContext? SessionContext => sessionContext;
 
     public abstract JsonTypeInfo JsonTypeInfo { get; }
 
@@ -55,7 +57,7 @@ public abstract class ToolHandlerBase<TParams>(
                                 DictSerializerContext.Default.DictionaryStringObject
                             )
                             .Deserialize(JsonTypeInfo),
-                _ => null
+                _ => null,
             }
             ?? throw new ArgumentException(
                 $"Invalid parameters type. Expected {typeof(TParams).Name}, got {parameters.GetType()}:"
