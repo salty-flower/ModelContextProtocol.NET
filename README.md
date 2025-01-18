@@ -2,11 +2,7 @@
 
 ![NuGet Version](https://img.shields.io/nuget/vpre/ModelContextProtocol.NET.Server)
 
-A C# SDK implementation of the Model Context Protocol (MCP), enabling seamless integration between AI models and development environments.
-
-## Overview
-
-ModelContextProtocol.NET is a native .NET implementation of the Model Context Protocol, designed to facilitate communication between AI models and development environments. This SDK provides a robust foundation for building AI-powered tools and applications in the .NET ecosystem.
+A C# SDK implementation of the Model Context Protocol (MCP).
 
 ## Features
 
@@ -25,58 +21,76 @@ ModelContextProtocol.NET is a native .NET implementation of the Model Context Pr
 
 ## Demo
 
-The repository includes a fully functional calculator demo that showcases the basic capabilities of the MCP implementation. This demo serves as a practical example of how to integrate and use the protocol in your applications.
-
-## Technical Details
-
-### Architecture
-
-The project is structured into multiple components:
-
-- **Core Library**: Contains the fundamental protocol implementation
-- **Server Components**: Handles communication and request processing
-- **Demo Implementation**: Provides a working example with a calculator application
-
-### Key Benefits
-
-- **Native AOT Support**: Fully compatible with .NET Native AOT compilation for optimal performance
-- **Modular Design**: Clean separation of concerns allowing for flexible implementation
-- **Standard Compliance**: Implements the Model Context Protocol specification
+See `src/ModelContextProtocol.NET.Demo.Calculator` for a fully functional calculator demo that covers:
+- Logging setup
+- Tool handler implementation
+- Request/response handling
+- Error management
 
 ## Getting Started
 
 Install [the server package](https://www.nuget.org/packages/ModelContextProtocol.NET.Server):
 
 ```bash
-dotnet add package ModelContextProtocol.NET.Server
+dotnet add package ModelContextProtocol.NET.Server --prerelease
 ```
 
-The easiest way to get started is to look at the calculator demo in `src/ModelContextProtocol.NET.Demo.Calculator`.
-Here's a quick example of how to set up an MCP server:
+For hosting integration, add [the server hosting package](https://www.nuget.org/packages/ModelContextProtocol.NET.Server.Hosting):
 
+```bash
+dotnet add package ModelContextProtocol.NET.Server.Hosting --prerelease
+```
+
+### A. Without Hosting
 ```csharp
 // Create server info
 var serverInfo = new Implementation { Name = "Calculator Demo Server", Version = "1.0.0" };
 
 // Configure and build server
-var server = new McpServerBuilder(serverInfo)
-    .AddStdioTransport()
-    // see below for logging configuration
-    .ConfigureLogging(logging => ...)
-    .ConfigureTools(tools => tools.AddHandler<CalculatorToolHandler>())
-    .Build();
+var builder = new McpServerBuilder(serverInfo).AddStdioTransport();
+builder.Services.AddLogging(<see below>);
+builder.Tools.AddHandler<YourToolHandler>();
+builder.Tools.AddFunction(
+    name: "YourToolName",
+    description: "YourToolDescription",
+    parameterTypeInfo: YourParameterTypeJsonContext.Default.YourParameterType,
+    handler: (YourParameterType parameters, CancellationToken ct) => {
+        // Your tool implementation
+    }
+);
+// ...
 
-// Start the server
+var server = builder.Build();
 server.Start();
+await Task.Delay(-1); // Wait indefinitely
+```
+
+
+### B. With Hosting
+
+```csharp
+var builder = Host.CreateApplicationBuilder();
+builder.Services.AddMcpServer(serverInfo, mcp => {
+    mcp.AddStdioTransport();
+    // same as without hosting
+}, keepDefaultLogging: false); // clear default console logging
+// ...
+
+var host = builder.Build();
+await host.RunAsync();
 ```
 
 ### Logging Configuration
 
 `McpServerBuilder` uses `Microsoft.Extensions.Logging.ILogger` as the logging interface.
-Since stdio transport is used, logs can't be sent to the console.
-You need to configure a logging provider that can write to a file or other logging destination.
+When stdio transport is used, logs can't be sent to the console.
+You need to configure a logging provider that writes to other logging destination.
 
 If no logging provider is configured, a null logger will be used, resulting in no logs being written.
+
+The generic host builder will add console-based logger by default, namely `ILoggerFactory` and `ILogger<T>`.
+`AddMcpServer` will remove them by default for the same reason as above.
+If you still want to keep them, set `keepDefaultLogging` to `true` in `AddMcpServer`.
 
 ```csharp
 // Using Serilog
@@ -88,27 +102,25 @@ If no logging provider is configured, a null logger will be used, resulting in n
 
 ### Implementing Tools
 
-Tools are implemented as handlers. Here's a simplified example from the calculator demo:
-
-```csharp
-public class CalculatorParameters
-{
-    public required CalculatorOperation Operation { get; init; }
-    public required double A { get; init; }
-    public required double B { get; init; }
-}
-
-public enum CalculatorOperation { Add, Subtract, Multiply, Divide }
-```
-
-Check out the complete calculator demo for a full working example including:
-
-- Tool handler implementation
-- Request/response handling
-- Error management
-- Logging setup
+Tools are implemented as handlers.
+For NativeAOT compatibility, a `JsonTypeInfo` is required for the parameter type.
+Then you can either implement a handler class to enjoy dependency injection etc.,
+or supply a function directly.
 
 More documentation and implementation guide coming soon.
+
+
+## Technical Details
+
+### Architecture
+
+The project is structured into multiple components:
+
+- **Core Library**: Contains the fundamental protocol implementation
+- **Server Components**: Handles communication and request processing
+- **Server Hosting**: Integrates MCP server to .NET generic host
+- **Demo**: Provides working examples 
+  - a calculator application
 
 ## Development Status
 
