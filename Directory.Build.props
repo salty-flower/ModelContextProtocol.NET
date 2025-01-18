@@ -12,13 +12,6 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == 'true'">
-    <StripSymbols>true</StripSymbols>
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-    <InvariantGlobalization>true</InvariantGlobalization>
-  </PropertyGroup>
-
   <!-- Solution properties -->
   <PropertyGroup>
     <SolutionDir Condition="'$(SolutionDir)' == ''">
