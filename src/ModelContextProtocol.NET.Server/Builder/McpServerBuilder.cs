@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Core.Transport.Base;
+using ModelContextProtocol.NET.Server.Contexts;
 using ModelContextProtocol.NET.Server.Features.Resources;
+using ModelContextProtocol.NET.Server.Session;
 using ModelContextProtocol.NET.Server.Transport;
 
 namespace ModelContextProtocol.NET.Server.Builder;
@@ -24,7 +26,22 @@ public sealed class McpServerBuilder
 
     public McpServerBuilder(Implementation serverInfo, IServiceCollection services)
     {
-        Services = services.AddSingleton(serverInfo);
+        Services = services
+            // Register server-wide services
+            .AddSingleton(serverInfo)
+            .AddSingleton<IMcpServer, McpServer>()
+            .AddTransient<ResourceSubscriptionManager>()
+            .AddSingleton<McpServerSession>()
+            // Register session-scoped services
+            .AddScoped<ServerContext>()
+            .AddScoped<IServerContext, ServerContext>()
+            .AddSingleton<SessionFacade>()
+            .AddScoped<ISessionFacade, SessionFacade>()
+            .AddScoped<IInternalSessionFacade, SessionFacade>()
+            .AddScoped<FeatureContext>()
+            .AddScoped<IFeatureContext, FeatureContext>();
+
+        // Initialize registries
         Tools = new ToolRegistry(Services);
         Resources = new ResourceRegistry(Services);
         Prompts = new PromptRegistry(Services);
@@ -49,19 +66,12 @@ public sealed class McpServerBuilder
     {
         if (!Services.Any(d => d.ServiceType == typeof(ILoggerFactory)))
         {
-            Services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-            Services.AddScoped(typeof(ILogger<>), typeof(NullLogger<>));
+            Services
+                .AddSingleton<ILoggerFactory, NullLoggerFactory>()
+                .AddScoped(typeof(ILogger<>), typeof(NullLogger<>));
         }
 
-        Services.AddTransient<ResourceSubscriptionManager>();
-
-        var serviceProvider = Services.BuildServiceProvider();
-
         // Create server
-        return new McpServer(
-            serviceProvider,
-            serviceProvider.GetRequiredService<ILogger<McpServer>>(),
-            serviceProvider.GetServices<IMcpTransportBase>()
-        );
+        return Services.BuildServiceProvider().GetRequiredService<IMcpServer>();
     }
 }

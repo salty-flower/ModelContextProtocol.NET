@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ModelContextProtocol.NET.Core.Models.Protocol.Client.Responses;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Server.Contexts;
+using ModelContextProtocol.NET.Server.Session;
 
 namespace ModelContextProtocol.NET.Server.Features.Tools;
 
@@ -17,13 +18,13 @@ public abstract class ToolHandlerBase<TParams>(
     Tool tool,
 #pragma warning disable CS9113 // Parameter is unread.
     IServerContext? serverContext,
-    ISessionContext? sessionContext
+    ISessionFacade? sessionContext
 #pragma warning restore CS9113 // Parameter is unread.
 ) : IToolHandler
     where TParams : class
 {
     protected IServerContext? ServerContext => serverContext;
-    protected ISessionContext? SessionContext => sessionContext;
+    protected ISessionContext? SessionContext => sessionContext?.Context;
 
     public abstract JsonTypeInfo JsonTypeInfo { get; }
 

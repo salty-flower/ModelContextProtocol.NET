@@ -26,24 +26,16 @@ namespace ModelContextProtocol.NET.Server.Session;
 /// Handles initialization, message routing, and session state.
 /// </summary>
 internal class McpServerSession(
-    IServiceProvider serviceProvider,
     ILogger<McpServerSession> logger,
     IMcpTransportBase transport,
     Implementation serverInfo,
-    ResourceSubscriptionManager subscriptionManager
+    ResourceSubscriptionManager subscriptionManager,
+    IInternalSessionFacade sessionFacade
 ) : IAsyncDisposable
 {
     private readonly CancellationTokenSource sessionCts = new();
     private readonly TaskCompletionSource initializationCompletion = new();
-    private readonly Dictionary<string, IToolHandler> toolHandlers = [];
-    private readonly Dictionary<string, IResourceHandler> resourceHandlers = [];
-    private readonly Dictionary<string, IPromptHandler> promptHandlers = [];
-
     private SessionState state = SessionState.Created;
-    private Implementation? clientInfo;
-    private readonly HashSet<string> activeSubscriptions = [];
-
-    private IServiceScope? sessionScope;
 
     public static ServerCapabilities DefaultServerCapabilities =>
         new()
@@ -93,11 +85,14 @@ internal class McpServerSession(
         try
         {
             // Clean up subscriptions
-            foreach (var uri in activeSubscriptions)
+            foreach (var uri in sessionFacade.ActiveSubscriptions)
             {
-                subscriptionManager.Unsubscribe(uri, clientInfo?.Name ?? string.Empty);
+                subscriptionManager.Unsubscribe(
+                    uri,
+                    sessionFacade.Context.ClientInfo.Name ?? string.Empty
+                );
             }
-            activeSubscriptions.Clear();
+            sessionFacade.ActiveSubscriptions.Clear();
 
             // Cancel ongoing operations
             _ = DisposeAsync();
@@ -115,7 +110,7 @@ internal class McpServerSession(
         Stop();
         sessionCts.Dispose();
         await transport.DisposeAsync();
-        sessionScope?.Dispose();
+        sessionFacade.SessionScope?.Dispose();
     }
 
     private async Task ProcessMessagesAsync(CancellationToken cancellationToken)
@@ -215,36 +210,8 @@ internal class McpServerSession(
                 return;
             }
 
-            // Store client info
-            clientInfo = request.Params.ClientInfo;
-
-            // Create session scope
-            sessionScope = serviceProvider.CreateScope();
-            var scopedProvider = sessionScope.ServiceProvider;
-
-            // Register session-scoped services
-            var services = new ServiceCollection();
-            services.AddSingleton(serverInfo);
-            services.AddSingleton<ServerContext>();
-            services.AddSingleton<IServerContext, ServerContext>();
-            services.AddSingleton((SessionContext)request.Params);
-            services.AddSingleton<ISessionContext, SessionContext>();
-            services.AddSingleton<FeatureContext>();
-            services.AddSingleton<IFeatureContext, FeatureContext>();
-
-            // Initialize handlers from scoped provider
-            foreach (var toolHandler in scopedProvider.GetServices<IToolHandler>())
-            {
-                toolHandlers[toolHandler.Tool.Name] = toolHandler;
-            }
-            foreach (var resourceHandler in scopedProvider.GetServices<IResourceHandler>())
-            {
-                resourceHandlers[resourceHandler.Template.UriTemplate] = resourceHandler;
-            }
-            foreach (var promptHandler in scopedProvider.GetServices<IPromptHandler>())
-            {
-                promptHandlers[promptHandler.Template.Name] = promptHandler;
-            }
+            // Initialize session
+            sessionFacade.Initialize(request.Params);
 
             // Send initialize result
             var response = new JsonRpcResponse<InitializeResult>
@@ -389,7 +356,7 @@ internal class McpServerSession(
     {
         var result = new ListPromptsResult
         {
-            Prompts = [.. promptHandlers.Values.Select(h => h.Template)]
+            Prompts = [.. sessionFacade.PromptHandlers.Values.Select(h => h.Template)]
         };
 
         await SendResponseAsync(request.Id, result, cancellationToken);
@@ -401,14 +368,13 @@ internal class McpServerSession(
     )
     {
         ArgumentNullException.ThrowIfNull(request.Params?.Arguments, nameof(request.Params));
-        if (!promptHandlers.TryGetValue(request.Params.Name, out var handler))
+        if (!sessionFacade.PromptHandlers.TryGetValue(request.Params.Name, out var handler))
         {
             throw new ArgumentException($"Prompt '{request.Params.Name}' not found");
         }
 
         var messages = await handler.HandleAsync(request.Params.Arguments, cancellationToken);
         var result = new GetPromptResult { Messages = messages };
-
         await SendResponseAsync(request.Id, result, cancellationToken);
     }
 
@@ -418,7 +384,7 @@ internal class McpServerSession(
     )
     {
         ArgumentNullException.ThrowIfNull(request.Params?.Arguments, nameof(request.Params));
-        if (!toolHandlers.TryGetValue(request.Params.Name, out var handler))
+        if (!sessionFacade.ToolHandlers.TryGetValue(request.Params.Name, out var handler))
         {
             throw new ArgumentException($"Tool '{request.Params.Name}' not found");
         }
@@ -432,7 +398,10 @@ internal class McpServerSession(
         CancellationToken cancellationToken
     )
     {
-        var result = new ListToolsResult { Tools = [.. toolHandlers.Values.Select(h => h.Tool)] };
+        var result = new ListToolsResult
+        {
+            Tools = [.. sessionFacade.ToolHandlers.Values.Select(h => h.Tool)]
+        };
         await SendResponseAsync(request.Id, result, cancellationToken);
     }
 
@@ -445,8 +414,8 @@ internal class McpServerSession(
         {
             Resources =
             [
-                .. resourceHandlers
-                    .Values.Select(h => h.Template)
+                .. sessionFacade
+                    .ResourceHandlers.Values.Select(h => h.Template)
                     .Select(rt => new Resource
                     {
                         Name = rt.Name,
@@ -468,7 +437,7 @@ internal class McpServerSession(
         ArgumentNullException.ThrowIfNull(request.Params, nameof(request.Params));
 
         var handler =
-            resourceHandlers.Values.FirstOrDefault(h =>
+            sessionFacade.ResourceHandlers.Values.FirstOrDefault(h =>
                 UriTemplateMatches(h.Template.UriTemplate, request.Params.Uri)
             )
             ?? throw new ArgumentException($"No handler found for resource '{request.Params.Uri}'");
@@ -495,18 +464,18 @@ internal class McpServerSession(
         CancellationToken cancellationToken
     )
     {
-        ArgumentNullException.ThrowIfNull(request.Params, nameof(request.Params));
+        ArgumentNullException.ThrowIfNull(request.Params?.Uri, nameof(request.Params));
 
         // Find the handler for this URI
         var handler =
-            resourceHandlers.Values.FirstOrDefault(h =>
+            sessionFacade.ResourceHandlers.Values.FirstOrDefault(h =>
                 UriTemplateMatches(h.Template.UriTemplate, request.Params.Uri)
             )
             ?? throw new ArgumentException($"No handler found for resource '{request.Params.Uri}'");
 
         // Subscribe to the resource
-        subscriptionManager.Subscribe(request.Params.Uri, clientInfo!.Name);
-        activeSubscriptions.Add(request.Params.Uri);
+        subscriptionManager.Subscribe(request.Params.Uri, sessionFacade.Context.ClientInfo.Name);
+        sessionFacade.ActiveSubscriptions.Add(request.Params.Uri);
 
         // Get initial value
         var parameters = ExtractUriParameters(handler.Template.UriTemplate, request.Params.Uri);
@@ -531,8 +500,8 @@ internal class McpServerSession(
         ArgumentNullException.ThrowIfNull(request.Params, nameof(request.Params));
 
         // Unsubscribe from the resource
-        subscriptionManager.Unsubscribe(request.Params.Uri, clientInfo!.Name);
-        activeSubscriptions.Remove(request.Params.Uri);
+        subscriptionManager.Unsubscribe(request.Params.Uri, sessionFacade.Context.ClientInfo.Name);
+        sessionFacade.ActiveSubscriptions.Remove(request.Params.Uri);
 
         // Send success response
         await SendResponseAsync(request.Id, new EmptyResult(), cancellationToken);
