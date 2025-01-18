@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelContextProtocol.NET.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelContextProtocol.NET.Server", "src\ModelContextProtocol.NET.Server\ModelContextProtocol.NET.Server.csproj", "{DD5A4F08-2D0C-4B15-9186-3B0F620944BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelContextProtocol.NET.Server.Hosting", "src\ModelContextProtocol.NET.Server.Hosting\ModelContextProtocol.NET.Server.Hosting.csproj", "{444E13B1-1B99-4751-97DF-51A2057E6495}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{DD5A4F08-2D0C-4B15-9186-3B0F620944BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD5A4F08-2D0C-4B15-9186-3B0F620944BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD5A4F08-2D0C-4B15-9186-3B0F620944BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{444E13B1-1B99-4751-97DF-51A2057E6495}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{444E13B1-1B99-4751-97DF-51A2057E6495}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{444E13B1-1B99-4751-97DF-51A2057E6495}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{444E13B1-1B99-4751-97DF-51A2057E6495}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

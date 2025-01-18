@@ -74,5 +74,10 @@
       PrivateAssets="All"
       Version="8.0.0"
     />
+    <!-- Hosting -->
+    <PackageVersion
+      Include="Microsoft.Extensions.Hosting.Abstractions"
+      Version="9.0.0"
+    />
   </ItemGroup>
 </Project>
