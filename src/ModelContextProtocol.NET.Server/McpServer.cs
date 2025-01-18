@@ -16,9 +16,7 @@ namespace ModelContextProtocol.NET.Server;
 /// Default implementation of an MCP server.
 /// </summary>
 internal class McpServer(
-    IServiceProvider internalServiceProvider,
-    IServiceCollection userServiceCollection,
-    Implementation serverInfo,
+    IServiceProvider serviceProvider,
     ILogger<McpServer> logger,
     IEnumerable<IMcpTransportBase> transports
 ) : IMcpServer
@@ -29,7 +27,8 @@ internal class McpServer(
     private readonly CancellationTokenSource serverCts = new();
     private bool isDisposed;
 
-    public Implementation ServerInfo { get; } = serverInfo;
+    public Implementation ServerInfo { get; } =
+        serviceProvider.GetRequiredService<Implementation>();
 
     public void Start(CancellationToken cancellationToken = default)
     {
@@ -70,11 +69,11 @@ internal class McpServer(
 
             serverCts.Dispose();
 
-            if (internalServiceProvider is IAsyncDisposable asyncDisposable)
+            if (serviceProvider is IAsyncDisposable asyncDisposable)
             {
                 await asyncDisposable.DisposeAsync();
             }
-            else if (internalServiceProvider is IDisposable disposable)
+            else if (serviceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
             }
@@ -95,11 +94,11 @@ internal class McpServer(
             // Create a new session
             var sessionId = Guid.NewGuid();
             var session = new McpServerSession(
-                userServiceCollection,
-                internalServiceProvider.GetRequiredService<ILogger<McpServerSession>>(),
+                serviceProvider,
+                serviceProvider.GetRequiredService<ILogger<McpServerSession>>(),
                 transport,
                 ServerInfo,
-                internalServiceProvider.GetRequiredService<ResourceSubscriptionManager>()
+                serviceProvider.GetRequiredService<ResourceSubscriptionManager>()
             );
 
             // Store and start the session

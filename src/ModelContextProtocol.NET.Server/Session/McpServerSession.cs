@@ -26,7 +26,7 @@ namespace ModelContextProtocol.NET.Server.Session;
 /// Handles initialization, message routing, and session state.
 /// </summary>
 internal class McpServerSession(
-    IServiceCollection userServiceCollection,
+    IServiceProvider serviceProvider,
     ILogger<McpServerSession> logger,
     IMcpTransportBase transport,
     Implementation serverInfo,
@@ -43,7 +43,7 @@ internal class McpServerSession(
     private Implementation? clientInfo;
     private readonly HashSet<string> activeSubscriptions = [];
 
-    private IServiceProvider? userServiceProvider;
+    private IServiceScope? sessionScope;
 
     public static ServerCapabilities DefaultServerCapabilities =>
         new()
@@ -100,7 +100,7 @@ internal class McpServerSession(
             activeSubscriptions.Clear();
 
             // Cancel ongoing operations
-            sessionCts.Cancel();
+            _ = DisposeAsync();
             UpdateState(SessionState.Stopped);
         }
         catch (Exception ex)
@@ -115,6 +115,7 @@ internal class McpServerSession(
         Stop();
         sessionCts.Dispose();
         await transport.DisposeAsync();
+        sessionScope?.Dispose();
     }
 
     private async Task ProcessMessagesAsync(CancellationToken cancellationToken)
@@ -217,29 +218,30 @@ internal class McpServerSession(
             // Store client info
             clientInfo = request.Params.ClientInfo;
 
-            // Add user services
-            userServiceCollection.AddSingleton(serverInfo);
-            userServiceCollection.AddSingleton<ServerContext>();
-            userServiceCollection.AddSingleton<IServerContext, ServerContext>();
-            userServiceCollection.AddSingleton((SessionContext)request.Params);
-            userServiceCollection.AddSingleton<ISessionContext, SessionContext>();
-            userServiceCollection.AddSingleton<FeatureContext>();
-            userServiceCollection.AddSingleton<IFeatureContext, FeatureContext>();
+            // Create session scope
+            sessionScope = serviceProvider.CreateScope();
+            var scopedProvider = sessionScope.ServiceProvider;
 
-            userServiceProvider = userServiceCollection.BuildServiceProvider();
+            // Register session-scoped services
+            var services = new ServiceCollection();
+            services.AddSingleton(serverInfo);
+            services.AddSingleton<ServerContext>();
+            services.AddSingleton<IServerContext, ServerContext>();
+            services.AddSingleton((SessionContext)request.Params);
+            services.AddSingleton<ISessionContext, SessionContext>();
+            services.AddSingleton<FeatureContext>();
+            services.AddSingleton<IFeatureContext, FeatureContext>();
 
-            // Initialize tool handlers
-            foreach (var toolHandler in userServiceProvider.GetServices<IToolHandler>())
+            // Initialize handlers from scoped provider
+            foreach (var toolHandler in scopedProvider.GetServices<IToolHandler>())
             {
                 toolHandlers[toolHandler.Tool.Name] = toolHandler;
             }
-            // Initialize resource handlers
-            foreach (var resourceHandler in userServiceProvider.GetServices<IResourceHandler>())
+            foreach (var resourceHandler in scopedProvider.GetServices<IResourceHandler>())
             {
                 resourceHandlers[resourceHandler.Template.UriTemplate] = resourceHandler;
             }
-            // Initialize prompt handlers
-            foreach (var promptHandler in userServiceProvider.GetServices<IPromptHandler>())
+            foreach (var promptHandler in scopedProvider.GetServices<IPromptHandler>())
             {
                 promptHandlers[promptHandler.Template.Name] = promptHandler;
             }
