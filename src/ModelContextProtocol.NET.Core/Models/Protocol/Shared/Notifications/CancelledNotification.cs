@@ -1,4 +1,3 @@
-using ModelContextProtocol.NET.Core.Models.JsonRpc;
 using ModelContextProtocol.NET.Core.Models.JsonRpc.Types;
 using ModelContextProtocol.NET.Core.Models.Protocol.Base;
 

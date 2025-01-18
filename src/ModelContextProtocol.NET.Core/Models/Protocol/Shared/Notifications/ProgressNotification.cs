@@ -1,4 +1,3 @@
-using ModelContextProtocol.NET.Core.Models.JsonRpc;
 using ModelContextProtocol.NET.Core.Models.Protocol.Base;
 
 namespace ModelContextProtocol.NET.Core.Models.Protocol.Shared.Notifications;

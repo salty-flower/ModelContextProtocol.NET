@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Core.Transport.Base;
-using ModelContextProtocol.NET.Server.Features.Resources;
 using ModelContextProtocol.NET.Server.Session;
 
 namespace ModelContextProtocol.NET.Server;

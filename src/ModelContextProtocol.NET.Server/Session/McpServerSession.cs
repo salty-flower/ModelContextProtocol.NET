@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.NET.Core;
 using ModelContextProtocol.NET.Core.Models.JsonRpc;
@@ -14,10 +13,7 @@ using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Core.Models.Protocol.Shared.Notifications;
 using ModelContextProtocol.NET.Core.Models.Protocol.Shared.Responses;
 using ModelContextProtocol.NET.Core.Transport.Base;
-using ModelContextProtocol.NET.Server.Contexts;
-using ModelContextProtocol.NET.Server.Features.Prompts;
 using ModelContextProtocol.NET.Server.Features.Resources;
-using ModelContextProtocol.NET.Server.Features.Tools;
 
 namespace ModelContextProtocol.NET.Server.Session;
 

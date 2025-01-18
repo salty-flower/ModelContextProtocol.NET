@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Runtime.CompilerServices;
-
 namespace ModelContextProtocol.NET.Core.Models.Protocol.Shared.Content;
 
 public record TextContent : Annotated
