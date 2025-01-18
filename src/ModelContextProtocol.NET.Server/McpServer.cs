@@ -93,13 +93,7 @@ internal class McpServer(
 
             // Create a new session
             var sessionId = Guid.NewGuid();
-            var session = new McpServerSession(
-                serviceProvider,
-                serviceProvider.GetRequiredService<ILogger<McpServerSession>>(),
-                transport,
-                ServerInfo,
-                serviceProvider.GetRequiredService<ResourceSubscriptionManager>()
-            );
+            var session = serviceProvider.GetRequiredService<McpServerSession>();
 
             // Store and start the session
             if (sessions.TryAdd(sessionId, session))
