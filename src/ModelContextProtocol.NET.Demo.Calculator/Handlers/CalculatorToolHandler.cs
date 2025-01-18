@@ -10,6 +10,7 @@ using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Core.Models.Protocol.Shared.Content;
 using ModelContextProtocol.NET.Server.Contexts;
 using ModelContextProtocol.NET.Server.Features.Tools;
+using ModelContextProtocol.NET.Server.Session;
 
 namespace ModelContextProtocol.NET.Demo.Calculator.Handlers;
 
@@ -40,9 +41,9 @@ public partial class CalculatorParametersJsonContext : JsonSerializerContext { }
 /// </summary>
 public class CalculatorToolHandler(
     IServerContext serverContext,
-    ISessionContext sessionContext,
+    ISessionFacade sessionFacade,
     ILogger<CalculatorToolHandler> logger
-) : ToolHandlerBase<CalculatorParameters>(tool, serverContext, sessionContext)
+) : ToolHandlerBase<CalculatorParameters>(tool, serverContext, sessionFacade)
 {
     private static readonly Tool tool =
         new()

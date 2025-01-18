@@ -22,6 +22,7 @@ var builder = new McpServerBuilder(serverInfo).AddStdioTransport();
 builder.Services.AddLogging(builder =>
     builder.AddSerilog(seriLogger).SetMinimumLevel(LogLevel.Trace)
 );
+builder.Tools.AddHandler<CalculatorToolHandler>();
 builder.Tools.AddFunction(
     name: "Calculator_function_flavor",
     description: "Still performs basic arithmetic operations, but implemented in functional style",
