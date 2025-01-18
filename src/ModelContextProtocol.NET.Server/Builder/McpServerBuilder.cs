@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
@@ -14,97 +12,56 @@ namespace ModelContextProtocol.NET.Server.Builder;
 /// <summary>
 /// Builder for configuring and creating an MCP server.
 /// </summary>
-public sealed class McpServerBuilder(Implementation serverInfo)
+public sealed class McpServerBuilder
 {
-    private readonly ServiceCollection internalServiceCollection = [];
-    private readonly ServiceCollection userServiceCollection = [];
-    private readonly List<Action<IServiceCollection>> userServiceConfigureActions = [];
-    private bool userHasConfiguredLogger = false;
+    public IServiceCollection Services { get; private init; }
+    public IToolRegistry Tools { get; private init; }
+    public IResourceRegistry Resources { get; private init; }
+    public IPromptRegistry Prompts { get; private init; }
 
-    /// <summary>
-    /// Configures logging for the server. If not configured, no logging will occur.
-    /// </summary>
-    public McpServerBuilder ConfigureLogging(Action<ILoggingBuilder> configure)
-    {
-        internalServiceCollection.AddLogging(configure);
-        userHasConfiguredLogger = true;
-        return this;
-    }
+    public McpServerBuilder(Implementation serverInfo)
+        : this(serverInfo, new ServiceCollection()) { }
 
-    /// <summary>
-    /// Configures services for the server.
-    /// </summary>
-    public McpServerBuilder ConfigureUserServices(Action<IServiceCollection> configure)
+    public McpServerBuilder(Implementation serverInfo, IServiceCollection services)
     {
-        userServiceConfigureActions.Add(configure);
-        return this;
-    }
-
-    /// <summary>
-    /// Adds user-provided services to the server.
-    /// </summary>
-    public McpServerBuilder AddUserServices(IServiceCollection userServices)
-    {
-        userServiceCollection.Add(userServices);
-        return this;
+        Services = services.AddSingleton(serverInfo);
+        Tools = new ToolRegistry(Services);
+        Resources = new ResourceRegistry(Services);
+        Prompts = new PromptRegistry(Services);
     }
 
     public McpServerBuilder AddStdioTransport()
     {
-        internalServiceCollection.AddSingleton<IMcpTransportBase, StdioServerTransport>();
+        Services.AddSingleton<IMcpTransportBase, StdioServerTransport>();
         return this;
     }
 
     public McpServerBuilder AddWebSocketTransport()
     {
-        internalServiceCollection.AddSingleton<IMcpTransportBase, WebSocketServerTransport>();
+        Services.AddSingleton<IMcpTransportBase, WebSocketServerTransport>();
         return this;
     }
-
-    /// <summary>
-    /// Configures tools for the server.
-    /// </summary>
-    public McpServerBuilder ConfigureTools(Action<IToolRegistry> configure) =>
-        ConfigureUserServices(services => configure(new ToolRegistry(services)));
-
-    /// <summary>
-    /// Configures resources for the server.
-    /// </summary>
-    public McpServerBuilder ConfigureResources(Action<IResourceRegistry> configure) =>
-        ConfigureUserServices(services => configure(new ResourceRegistry(services)));
-
-    /// <summary>
-    /// Configures prompts for the server.
-    /// </summary>
-    public McpServerBuilder ConfigurePrompts(Action<IPromptRegistry> configure) =>
-        ConfigureUserServices(services => configure(new PromptRegistry(services)));
 
     /// <summary>
     /// Builds the server.
     /// </summary>
     public IMcpServer Build()
     {
-        if (!userHasConfiguredLogger)
+        if (!Services.Any(d => d.ServiceType == typeof(ILoggerFactory)))
         {
-            internalServiceCollection.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-            internalServiceCollection.AddScoped(typeof(ILogger<>), typeof(NullLogger<>));
+            Services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
+            Services.AddScoped(typeof(ILogger<>), typeof(NullLogger<>));
         }
 
-        // Apply all configuration actions
-        foreach (var configure in userServiceConfigureActions)
-            configure(userServiceCollection);
+        Services.AddTransient<ResourceSubscriptionManager>();
 
-        internalServiceCollection.AddTransient<ResourceSubscriptionManager>();
-
-        var internalServiceProvider = internalServiceCollection.BuildServiceProvider();
+        var serviceProvider = Services.BuildServiceProvider();
 
         // Create server
         return new McpServer(
-            internalServiceProvider,
-            userServiceCollection,
-            serverInfo,
-            internalServiceProvider.GetRequiredService<ILogger<McpServer>>(),
-            internalServiceProvider.GetServices<IMcpTransportBase>()
+            serviceProvider,
+            serviceProvider.GetRequiredService<ILogger<McpServer>>(),
+            serviceProvider.GetServices<IMcpTransportBase>()
         );
     }
 }
