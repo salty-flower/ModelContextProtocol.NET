@@ -47,7 +47,7 @@ internal class ProgressTokenJsonConverter : JsonConverter<string>
                 return reader.GetString();
             case JsonTokenType.Number:
             {
-                var stringValue = reader.GetDouble();
+                var stringValue = reader.GetInt32();
                 return stringValue.ToString(CultureInfo.InvariantCulture);
             }
             case JsonTokenType.Null:
