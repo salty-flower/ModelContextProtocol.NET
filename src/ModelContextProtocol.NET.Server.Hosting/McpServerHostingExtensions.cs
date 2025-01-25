@@ -40,7 +40,6 @@ public static class McpServerHostingExtensions
                 )
             );
 
-
         // Create server builder with host's service collection
         var serverBuilder = new McpServerBuilder(serverInfo, services);
 
