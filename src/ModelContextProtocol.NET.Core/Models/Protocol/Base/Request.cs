@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using ModelContextProtocol.NET.Core.Models.JsonRpc;
+using ModelContextProtocol.NET.Core.Models.JsonRpc.Types;
 
 namespace ModelContextProtocol.NET.Core.Models.Protocol.Base;
 
@@ -15,7 +16,7 @@ public abstract class RequestParams<TMeta>
 
     public class Meta
     {
-        public string? ProgressToken { get; init; }
+        public RpcId ProgressToken { get; init; }
     }
 }
 

@@ -4,6 +4,37 @@ using ModelContextProtocol.NET.Core.Json;
 
 namespace ModelContextProtocol.NET.Core.Models.JsonRpc.Types;
 
+/// <summary>
+///   <see cref="RpcId" /> is the implementation class for "string | number".
+///   It currently serves as `RequestId` and `ProgressToken`.
+///   <para>
+///     Schema Reference:
+///     <list type="bullet">
+///       <item>
+///         <see
+///           href="https:/// github.com/modelcontextprotocol/specification/blob/main/schema/2024-11-05/schema.ts"
+///         >
+///           TypeScript version
+///         </see>
+///         defines both of them to `string | number`
+///       </item>
+///       <item>
+///         <see
+///           href="https:/// github.com/modelcontextprotocol/specification/blob/main/schema/2024-11-05/schema.json"
+///         >
+///           JSON version
+///         </see>
+///         further restricts to `string | integer`
+///         <see
+///           href="https:/// github.com/modelcontextprotocol/specification/blob/363e36b3fabad8ec6253e468a74c8f7fc972e539/schema/2024-11-05/schema.json#L1268"
+///         >
+///           (permalink)
+///         </see>
+///       </item>
+///     </list>
+///   </para>
+///   Hence it's safe to use <see cref="long" /> for `number` and <see cref="string" /> for `string`.
+/// </summary>
 [JsonConverter(typeof(RpcIdJsonConverter))]
 public readonly struct RpcId : IEquatable<RpcId>
 {
