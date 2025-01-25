@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 using ModelContextProtocol.NET.Server.Builder;
 
@@ -17,9 +18,8 @@ public static class McpServerHostingExtensions
     /// </summary>
     /// <remarks>
     /// By default, <seealso cref="Microsoft.Extensions.Hosting.IHostApplicationBuilder"/>
-    /// will add console-based logger, namely <seealso cref="Microsoft.Extensions.Logging.ILoggerFactory"/>
-    /// and <seealso cref="Microsoft.Extensions.Logging.ILogger{T}"/>.
-    /// They will be removed if <paramref name="keepDefaultLogging"/> is set to <c>false</c>
+    /// will add console-based logger, namely <seealso cref="ConsoleLoggerProvider"/>.
+    /// It will be removed if <paramref name="keepDefaultLogging"/> is set to <c>false</c>
     /// because stdio is the main channel for MCP traffic.
     /// <br/>
     /// If you still want to keep them, set <paramref name="keepDefaultLogging"/> to <c>true</c>.
@@ -32,19 +32,14 @@ public static class McpServerHostingExtensions
     )
     {
         if (!keepDefaultLogging)
-        {
             services.Remove(
-                services.First(s =>
-                    s.ServiceType == typeof(ILoggerFactory)
-                    && s.ImplementationType == typeof(LoggerFactory)
+                services.First(sd =>
+                    sd.Lifetime == ServiceLifetime.Singleton
+                    && sd.ServiceType == typeof(ILoggerProvider)
+                    && sd.ImplementationType == typeof(ConsoleLoggerProvider)
                 )
             );
-            services.Remove(
-                services.First(s =>
-                    s.ServiceType == typeof(ILogger<>) && s.ImplementationType == typeof(Logger<>)
-                )
-            );
-        }
+
 
         // Create server builder with host's service collection
         var serverBuilder = new McpServerBuilder(serverInfo, services);
