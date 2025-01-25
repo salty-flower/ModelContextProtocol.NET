@@ -32,12 +32,12 @@
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageVersion
       Include="Microsoft.Extensions.Logging.Abstractions"
-      Version="9.0.0"
+      Version="9.0.1"
     />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.1" />
     <PackageVersion
       Include="Microsoft.Extensions.Logging.Console"
-      Version="9.0.0"
+      Version="9.0.1"
     />
     <!-- Memory -->
     <PackageVersion
@@ -66,11 +66,11 @@
     <!-- DI/IoC -->
     <PackageVersion
       Include="Microsoft.Extensions.DependencyInjection"
-      Version="9.0.0"
+      Version="9.0.1"
     />
     <PackageVersion
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="9.0.0"
+      Version="9.0.1"
     />
     <!-- Source Link -->
     <PackageVersion
@@ -81,7 +81,7 @@
     <!-- Hosting -->
     <PackageVersion
       Include="Microsoft.Extensions.Hosting.Abstractions"
-      Version="9.0.0"
+      Version="9.0.1"
     />
   </ItemGroup>
 </Project>
