@@ -30,14 +30,14 @@ public sealed class McpServerBuilder
             // Register server-wide services
             .AddSingleton(serverInfo)
             .AddSingleton<IMcpServer, McpServer>()
-            .AddTransient<ResourceSubscriptionManager>()
             .AddSingleton<McpServerSession>()
+            .AddSingleton<SessionFacade>()
+            .AddSingleton<ISessionFacade, SessionFacade>()
+            .AddSingleton<IInternalSessionFacade, SessionFacade>()
+            .AddSingleton<ResourceSubscriptionManager>()
             // Register session-scoped services
             .AddScoped<ServerContext>()
             .AddScoped<IServerContext, ServerContext>()
-            .AddSingleton<SessionFacade>()
-            .AddScoped<ISessionFacade, SessionFacade>()
-            .AddScoped<IInternalSessionFacade, SessionFacade>()
             .AddScoped<FeatureContext>()
             .AddScoped<IFeatureContext, FeatureContext>();
 
