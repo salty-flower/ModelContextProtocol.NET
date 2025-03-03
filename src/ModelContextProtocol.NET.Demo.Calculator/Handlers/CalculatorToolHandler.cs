@@ -29,7 +29,7 @@ public enum CalculatorOperation
     Add,
     Subtract,
     Multiply,
-    Divide
+    Divide,
 }
 
 [JsonSerializable(typeof(CalculatorParameters))]
@@ -44,14 +44,12 @@ public class CalculatorToolHandler(
     ILogger<CalculatorToolHandler> logger
 ) : ToolHandlerBase<CalculatorParameters>(tool, serverContext, sessionFacade)
 {
-    private static readonly Tool tool =
-        new()
-        {
-            Name = "Calculator",
-            Description = "Performs basic arithmetic operations",
-            InputSchema =
-                CalculatorParametersJsonContext.Default.CalculatorParameters.GetToolSchema()!
-        };
+    private static readonly Tool tool = new()
+    {
+        Name = "Calculator",
+        Description = "Performs basic arithmetic operations",
+        InputSchema = CalculatorParametersJsonContext.Default.CalculatorParameters.GetToolSchema()!,
+    };
 
     public override JsonTypeInfo JsonTypeInfo =>
         CalculatorParametersJsonContext.Default.CalculatorParameters;
@@ -68,7 +66,7 @@ public class CalculatorToolHandler(
             CalculatorOperation.Multiply => parameters.A * parameters.B,
             CalculatorOperation.Divide when parameters.B != 0 => parameters.A / parameters.B,
             CalculatorOperation.Divide => throw new DivideByZeroException("Cannot divide by zero"),
-            _ => throw new ArgumentException($"Unknown operation: {parameters.Operation}")
+            _ => throw new ArgumentException($"Unknown operation: {parameters.Operation}"),
         };
 
         var content = new TextContent { Text = result.ToString() };

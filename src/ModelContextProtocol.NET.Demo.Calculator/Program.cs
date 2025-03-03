@@ -39,17 +39,17 @@ builder.Tools.AddFunction(
                                 CalculatorOperation.Add => parameters.A + parameters.B,
                                 CalculatorOperation.Subtract => parameters.A - parameters.B,
                                 CalculatorOperation.Multiply => parameters.A * parameters.B,
-                                CalculatorOperation.Divide when parameters.B != 0
-                                    => parameters.A / parameters.B,
-                                CalculatorOperation.Divide
-                                    => throw new DivideByZeroException("Cannot divide by zero"),
-                                _
-                                    => throw new ArgumentException(
-                                        $"Unknown operation: {parameters.Operation}"
-                                    ),
+                                CalculatorOperation.Divide when parameters.B != 0 => parameters.A
+                                    / parameters.B,
+                                CalculatorOperation.Divide => throw new DivideByZeroException(
+                                    "Cannot divide by zero"
+                                ),
+                                _ => throw new ArgumentException(
+                                    $"Unknown operation: {parameters.Operation}"
+                                ),
                             }
                         )
-                    ).ToString()
+                    ).ToString(),
             }
         )
 );
@@ -58,11 +58,17 @@ var server = builder.Build();
 
 try
 {
+    // You can either use Start/Stop pattern:
+    /*
     server.Start();
     await Task.Delay(-1); // Wait indefinitely
+    server.Stop();
+    */
+
+    // Or use the more convenient RunAsync pattern:
+    await server.RunAsync(); // Runs until cancelled
 }
 finally
 {
-    server.Stop();
     await server.DisposeAsync();
 }
