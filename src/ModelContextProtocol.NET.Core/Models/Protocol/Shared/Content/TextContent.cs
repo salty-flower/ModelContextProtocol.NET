@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace ModelContextProtocol.NET.Core.Models.Protocol.Shared.Content;
 
 public record TextContent : Annotated
 {
+    [JsonIgnore]
     public string Type => "text";
     public required string Text { get; init; }
 
