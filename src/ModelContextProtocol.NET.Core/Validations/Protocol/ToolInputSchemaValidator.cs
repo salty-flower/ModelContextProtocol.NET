@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Linq;
+using FluentValidation;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 
 namespace ModelContextProtocol.NET.Core.Validations.Protocol;
@@ -7,7 +8,18 @@ public class ToolInputSchemaValidator : AbstractValidator<ToolInputSchema>
 {
     public ToolInputSchemaValidator()
     {
-        RuleFor(x => x.Type).Equal("object");
+        When(
+            x => x.Properties != null || (x.Required != null && x.Required.Count > 0),
+            () =>
+            {
+                RuleFor(x => x.Type)
+                    .Equal("object")
+                    .WithMessage(
+                        "Type must be 'object' when Properties or Required are specified."
+                    );
+            }
+        );
+
         When(
             x => x.Required != null,
             () =>

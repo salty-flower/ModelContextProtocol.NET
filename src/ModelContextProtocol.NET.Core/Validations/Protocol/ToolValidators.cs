@@ -9,5 +9,6 @@ public class ToolValidator : AbstractValidator<Tool>
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.InputSchema).NotNull().SetValidator(new ToolInputSchemaValidator());
+        RuleFor(x => x.OutputSchema).SetValidator(new ToolInputSchemaValidator());
     }
 }

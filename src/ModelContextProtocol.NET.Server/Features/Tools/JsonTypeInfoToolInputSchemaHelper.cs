@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Schema;
 using System.Text.Json.Serialization.Metadata;
@@ -8,17 +9,21 @@ namespace ModelContextProtocol.NET.Server.Features.Tools;
 
 public static class JsonTypeInfoToolInputSchemaHelper
 {
-    private static readonly JsonNode ObjectTypeArray = (JsonNode)
-        JsonSerializer.Deserialize(
-            """["object"]""",
-            typeof(JsonNode),
-            ToolInputSchemaSerializerContext.Default
-        )!;
-
     public static ToolInputSchema? GetToolSchema<T>(this JsonTypeInfo<T> jsonTypeInfo)
     {
         var schemaNode = jsonTypeInfo.GetJsonSchemaAsNode();
-        schemaNode["type"] = ObjectTypeArray.DeepClone();
+
+        // Normalize the "type" field: if it is an array (e.g. ["object", "null"]),
+        // pick the first non-null entry so it can be deserialized into the string-based
+        // Type property of ToolInputSchema.
+        if (schemaNode["type"] is JsonArray typeArray && typeArray.Count > 0)
+        {
+            // Prefer the first non-null type, otherwise take the first element.
+            var firstNonNull =
+                typeArray.FirstOrDefault(t => t?.GetValue<string>() != "null") ?? typeArray[0];
+            schemaNode["type"] = JsonValue.Create(firstNonNull?.GetValue<string>());
+        }
+
         return schemaNode.Deserialize(ToolInputSchemaSerializerContext.Default.ToolInputSchema);
     }
 }

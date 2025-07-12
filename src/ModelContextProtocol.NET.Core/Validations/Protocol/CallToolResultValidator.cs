@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using ModelContextProtocol.NET.Core.Models.Protocol.Client.Responses;
+using ModelContextProtocol.NET.Core.Models.Protocol.Shared.Content;
 
 namespace ModelContextProtocol.NET.Core.Validations.Protocol;
 
