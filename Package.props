@@ -2,7 +2,7 @@
   <!-- Package Metadata -->
   <PropertyGroup>
     <!-- Documentation -->
-    <Version>0.3.2-alpha</Version>
+    <Version>0.3.3-alpha</Version>
     <Authors>salty-flower</Authors>
     <Description>
       A C# SDK implementation of the Model Context Protocol (MCP)
