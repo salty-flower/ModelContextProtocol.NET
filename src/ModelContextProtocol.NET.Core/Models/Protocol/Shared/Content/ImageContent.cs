@@ -2,7 +2,7 @@
 
 public record ImageContent : Annotated
 {
-    public string Type => "image";
+    // "type" discriminator emitted automatically via JsonPolymorphic attribute on base record
     public required string Data { get; init; }
     public required string MimeType { get; init; }
 }

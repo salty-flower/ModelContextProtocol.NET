@@ -2,6 +2,6 @@
 
 public record EmbeddedResource : Annotated
 {
-    public string Type => "resource";
+    // "type" discriminator emitted automatically via JsonPolymorphic attribute on base record
     public required ResourceContents Resource { get; init; }
 }
