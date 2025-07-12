@@ -1,13 +1,14 @@
 <Project>
+  <PropertyGroup>
+    <CsharpSourceDir>$(SolutionDir)src</CsharpSourceDir>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="build\**" />
     <Content Remove="build\**" />
     <EmbeddedResource Remove="build\**" />
     <None Remove="build\**" />
   </ItemGroup>
-
   <ItemGroup>
-    <!-- Programming -->
     <!-- IDisposable -->
     <PackageReference Include="Fody">
       <PrivateAssets>all</PrivateAssets>
@@ -27,11 +28,26 @@
       PrivateAssets="All"
     />
   </ItemGroup>
-
-  <!-- prettier settings -->
-  <Import
-    Project="$(MSBuildThisFileDirectory)tools/prettier/prettier.targets"
-  />
   <!-- csharpier settings -->
-  <Import Project="$(MSBuildThisFileDirectory)tools/csharpier.targets" />
+  <Target Name="EnsureCSharpier">
+    <Exec
+      Command="csharpier --version"
+      IgnoreExitCode="true"
+      StandardErrorImportance="high"
+      StandardOutputImportance="low"
+    >
+      <Output PropertyName="CSharpierExists" TaskParameter="ExitCode" />
+    </Exec>
+    <Error
+      Condition="'$(CSharpierExists)' != '0'"
+      Text="csharpier is required but not found. Please install it via 'dotnet tool install -g csharpier' or visit https://www.nuget.org/packages/CSharpier/"
+    />
+  </Target>
+  <Target BeforeTargets="Restore" DependsOnTargets="EnsureCSharpier" Name="FormatCSharpier">
+    <Exec
+      Command="csharpier format $(CsharpSourceDir)"
+      StandardErrorImportance="high"
+      StandardOutputImportance="low"
+    />
+  </Target>
 </Project>
