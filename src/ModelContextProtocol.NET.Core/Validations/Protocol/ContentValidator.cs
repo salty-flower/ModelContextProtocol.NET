@@ -14,7 +14,7 @@ public class ContentValidator : AbstractValidator<Annotated>
                     TextContent => true,
                     ImageContent => true,
                     EmbeddedResource when allowEmbeddedResource => true,
-                    _ => false
+                    _ => false,
                 }
             )
             .WithMessage(content =>

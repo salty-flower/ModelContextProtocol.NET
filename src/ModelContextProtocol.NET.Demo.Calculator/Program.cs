@@ -39,17 +39,17 @@ builder.Tools.AddFunction(
                                 CalculatorOperation.Add => parameters.A + parameters.B,
                                 CalculatorOperation.Subtract => parameters.A - parameters.B,
                                 CalculatorOperation.Multiply => parameters.A * parameters.B,
-                                CalculatorOperation.Divide when parameters.B != 0
-                                    => parameters.A / parameters.B,
-                                CalculatorOperation.Divide
-                                    => throw new DivideByZeroException("Cannot divide by zero"),
-                                _
-                                    => throw new ArgumentException(
-                                        $"Unknown operation: {parameters.Operation}"
-                                    ),
+                                CalculatorOperation.Divide when parameters.B != 0 => parameters.A
+                                    / parameters.B,
+                                CalculatorOperation.Divide => throw new DivideByZeroException(
+                                    "Cannot divide by zero"
+                                ),
+                                _ => throw new ArgumentException(
+                                    $"Unknown operation: {parameters.Operation}"
+                                ),
                             }
                         )
-                    ).ToString()
+                    ).ToString(),
             }
         )
 );

@@ -74,7 +74,7 @@ internal class ResourceSubscriptionManager(IMcpTransportBase transport)
         // Send notifications to all subscribers
         var notification = new ResourceUpdatedNotification
         {
-            Params = new ResourceUpdatedNotification.Parameters { Uri = uri }
+            Params = new ResourceUpdatedNotification.Parameters { Uri = uri },
         };
 
         await transport.WriteMessageAsync(notification, cancellationToken);

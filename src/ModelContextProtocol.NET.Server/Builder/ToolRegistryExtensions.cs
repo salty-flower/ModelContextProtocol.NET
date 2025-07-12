@@ -23,7 +23,7 @@ public static class ToolRegistryExtensions
         {
             Name = name,
             Description = description,
-            InputSchema = parameterTypeInfo.GetToolSchema()!
+            InputSchema = parameterTypeInfo.GetToolSchema()!,
         };
 
         return registry.AddHandler(

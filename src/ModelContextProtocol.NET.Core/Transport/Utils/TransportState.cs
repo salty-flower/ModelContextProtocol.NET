@@ -38,5 +38,5 @@ public enum TransportState
     /// <summary>
     /// Transport is disposed.
     /// </summary>
-    Disposed
+    Disposed,
 }

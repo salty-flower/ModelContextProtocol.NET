@@ -139,8 +139,8 @@ internal class McpServerSession(
                                 Error = new JsonRpcErrorData
                                 {
                                     Code = McpErrorCodes.NotInitialized,
-                                    Message = "Not initialized"
-                                }
+                                    Message = "Not initialized",
+                                },
                             },
                             cancellationToken
                         );
@@ -199,8 +199,8 @@ internal class McpServerSession(
                     Error = new JsonRpcErrorData
                     {
                         Code = McpErrorCodes.InvalidParams,
-                        Message = "Invalid parameters"
-                    }
+                        Message = "Invalid parameters",
+                    },
                 };
                 await transport.WriteMessageAsync(error, cancellationToken);
                 return;
@@ -217,8 +217,8 @@ internal class McpServerSession(
                 {
                     ProtocolVersion = Constants.LATEST_PROTOCOL_VERSION,
                     ServerInfo = serverInfo,
-                    Capabilities = DefaultServerCapabilities
-                }
+                    Capabilities = DefaultServerCapabilities,
+                },
             };
 
             await transport.WriteMessageAsync(response, cancellationToken);
@@ -236,8 +236,8 @@ internal class McpServerSession(
                     Error = new JsonRpcErrorData
                     {
                         Code = McpErrorCodes.InternalError,
-                        Message = ex.Message
-                    }
+                        Message = ex.Message,
+                    },
                 },
                 cancellationToken
             );
@@ -275,9 +275,9 @@ internal class McpServerSession(
                                 Error = new JsonRpcErrorData
                                 {
                                     Code = McpErrorCodes.InvalidParams,
-                                    Message = ex.Message
+                                    Message = ex.Message,
                                 },
-                                Id = request.Id
+                                Id = request.Id,
                             },
                             cancellationToken
                         );
@@ -312,8 +312,8 @@ internal class McpServerSession(
                             Error = new JsonRpcErrorData
                             {
                                 Code = McpErrorCodes.MethodNotFound,
-                                Message = "Method not found"
-                            }
+                                Message = "Method not found",
+                            },
                         },
                         cancellationToken
                     );
@@ -336,8 +336,8 @@ internal class McpServerSession(
                         Error = new JsonRpcErrorData
                         {
                             Code = McpErrorCodes.InternalError,
-                            Message = ex.Message
-                        }
+                            Message = ex.Message,
+                        },
                     },
                     cancellationToken
                 );
@@ -352,7 +352,7 @@ internal class McpServerSession(
     {
         var result = new ListPromptsResult
         {
-            Prompts = [.. sessionFacade.PromptHandlers.Values.Select(h => h.Template)]
+            Prompts = [.. sessionFacade.PromptHandlers.Values.Select(h => h.Template)],
         };
 
         await SendResponseAsync(request.Id, result, cancellationToken);
@@ -396,7 +396,7 @@ internal class McpServerSession(
     {
         var result = new ListToolsResult
         {
-            Tools = [.. sessionFacade.ToolHandlers.Values.Select(h => h.Tool)]
+            Tools = [.. sessionFacade.ToolHandlers.Values.Select(h => h.Tool)],
         };
         await SendResponseAsync(request.Id, result, cancellationToken);
     }
@@ -418,9 +418,9 @@ internal class McpServerSession(
                         Uri = rt.UriTemplate,
                         Annotations = rt.Annotations,
                         Description = rt.Description,
-                        MimeType = rt.MimeType
-                    })
-            ]
+                        MimeType = rt.MimeType,
+                    }),
+            ],
         };
         await SendResponseAsync(request.Id, result, cancellationToken);
     }

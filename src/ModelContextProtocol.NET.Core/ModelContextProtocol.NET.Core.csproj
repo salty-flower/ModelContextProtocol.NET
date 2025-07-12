@@ -5,7 +5,6 @@
       Protocol (MCP)
     </Description>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentValidation" />
   </ItemGroup>

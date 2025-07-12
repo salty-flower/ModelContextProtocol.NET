@@ -14,7 +14,7 @@ public class ResourceContentsValidator : AbstractValidator<ResourceContents>
                 {
                     TextResourceContents text => !string.IsNullOrEmpty(text.Text),
                     BlobResourceContents blob => !string.IsNullOrEmpty(blob.Blob),
-                    _ => false
+                    _ => false,
                 }
             )
             .WithMessage(

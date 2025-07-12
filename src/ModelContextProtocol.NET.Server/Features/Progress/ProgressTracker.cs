@@ -55,8 +55,8 @@ internal class ProgressTracker(
             {
                 ProgressToken = progressToken,
                 Progress = _current,
-                Total = total
-            }
+                Total = total,
+            },
         };
 
         await transport.WriteMessageAsync(notification, cancellationToken);

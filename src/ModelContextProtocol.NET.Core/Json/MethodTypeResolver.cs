@@ -35,7 +35,7 @@ public static class MethodTypeResolver
                 "log" => typeof(LogRequest),
                 "roots/list" => typeof(ListRootsRequest),
 
-                _ => throw new ArgumentException($"Request {method} not found", nameof(method))
+                _ => throw new ArgumentException($"Request {method} not found", nameof(method)),
             };
 
     public static Type GetNotificationType(string method) =>
@@ -58,6 +58,9 @@ public static class MethodTypeResolver
                 "notifications/cancelled" => typeof(CancelledNotification),
                 "notifications/progress" => typeof(ProgressNotification),
 
-                _ => throw new ArgumentException($"Notification {method} not found", nameof(method))
+                _ => throw new ArgumentException(
+                    $"Notification {method} not found",
+                    nameof(method)
+                ),
             };
 }

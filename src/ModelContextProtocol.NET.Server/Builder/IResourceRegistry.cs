@@ -11,7 +11,6 @@ public interface IResourceRegistry
     /// <summary>
     /// Adds a resource handler.
     /// </summary>
-
     IResourceRegistry AddHandler<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler
     >()

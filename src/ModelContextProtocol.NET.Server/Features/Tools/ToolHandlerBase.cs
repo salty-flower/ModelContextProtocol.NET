@@ -50,14 +50,10 @@ public abstract class ToolHandlerBase<TParams>(
             parameters switch
             {
                 TParams p => p,
-                Dictionary<string, object> dict
-                    => (TParams?)
-                        JsonSerializer
-                            .SerializeToNode(
-                                dict,
-                                DictSerializerContext.Default.DictionaryStringObject
-                            )
-                            .Deserialize(JsonTypeInfo),
+                Dictionary<string, object> dict => (TParams?)
+                    JsonSerializer
+                        .SerializeToNode(dict, DictSerializerContext.Default.DictionaryStringObject)
+                        .Deserialize(JsonTypeInfo),
                 _ => null,
             }
             ?? throw new ArgumentException(

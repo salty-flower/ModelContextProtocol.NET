@@ -22,7 +22,7 @@ public abstract class McpException : Exception
             Data =
                 customData == null
                     ? innerException
-                    : new { InnerException = innerException, CustomData = customData }
+                    : new { InnerException = innerException, CustomData = customData },
         };
     }
 }

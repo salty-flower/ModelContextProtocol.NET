@@ -6,7 +6,6 @@ namespace ModelContextProtocol.NET.Server.Builder;
 /// <summary>
 /// Registry for configuring tools.
 /// </summary>
-
 public interface IToolRegistry
 {
     /// <summary>

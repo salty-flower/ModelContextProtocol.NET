@@ -7,5 +7,5 @@ internal enum SessionState
     WaitingForInitialization,
     Running,
     Stopped,
-    Failed
+    Failed,
 }
