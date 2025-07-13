@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Pack NuGet packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "Package.props"
+      - ".github/real-workflows/pack-nuget.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+x-step-checkout: &step-checkout
+  - name: Checkout
+    uses: actions/checkout@v4
+
+x-step-setup-dotnet: &step-setup-dotnet
+  - name: Setup .NET 9.x
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: |
+        9
+        10
+
+x-step-pack: &step-pack
+  - name: "Pack solution"
+    shell: pwsh
+    run: |
+      dotnet pack `
+        --configuration "Release" `
+        -o "./artifacts/nuget" `
+        ./ModelContextProtocol.NET.sln
+
+x-step-upload-artifact: &step-upload-artifact
+  - name: "Upload NuGet package artifact"
+    uses: actions/upload-artifact@v4
+    with:
+      name: "nuget-packages"
+      path: |
+        ./artifacts/nuget/*.nupkg
+      if-no-files-found: error
+      retention-days: 7
+
+jobs:
+  pack:
+    name: "Pack NuGet packages"
+    runs-on: ubuntu-latest
+    steps:
+      - <<: *step-checkout
+      - <<: *step-setup-dotnet
+      - <<: *step-pack
+      - <<: *step-upload-artifact 
