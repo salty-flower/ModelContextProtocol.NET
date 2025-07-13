@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="NuGet.config" />
+  </Folder>
+  <Project Path="src/ModelContextProtocol.NET.Core/ModelContextProtocol.NET.Core.csproj" />
+  <Project Path="src/ModelContextProtocol.NET.Demo.Calculator/ModelContextProtocol.NET.Demo.Calculator.csproj" />
+  <Project Path="src/ModelContextProtocol.NET.Server.Hosting/ModelContextProtocol.NET.Server.Hosting.csproj" />
+  <Project Path="src/ModelContextProtocol.NET.Server/ModelContextProtocol.NET.Server.csproj" />
+</Solution>
