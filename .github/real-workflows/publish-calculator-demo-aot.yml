@@ -2,12 +2,12 @@ dotnet_setup: &dotnet_setup
   name: Setup .NET
   uses: actions/setup-dotnet@v4
   with:
-    dotnet-version: "9"
+    dotnet-version: 10
 
 upload_artifact: &upload_artifact
   uses: actions/upload-artifact@v4
   with:
-    path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release/ModelContextProtocol.NET.Demo.Calculator*
+    path: build/publish/ModelContextProtocol.NET.Demo.Calculator/release_net10.0/ModelContextProtocol.NET.Demo.Calculator*
     name: ${{ matrix.name }}-build
     compression-level: 0
 
@@ -27,7 +27,7 @@ use-docker-sdk-with-matrix: &use-docker-sdk-with-matrix
   steps:
     - uses: actions/checkout@v4
     - name: Build ${{ matrix.target }}
-      run: dotnet publish
+      run: dotnet publish -p:TargetFramework=net10.0
     - name: Upload ${{ matrix.target }} Artifact
       <<: *upload_artifact
 
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
       - *dotnet_setup
       - name: Build ${{ matrix.name }}
-        run: dotnet publish
+        run: dotnet publish -p:TargetFramework=net10.0
       - name: Upload ${{ matrix.name }} Artifact
         <<: *upload_artifact
 
@@ -73,11 +73,11 @@ jobs:
   #         - target: linux-musl-arm64
   #           name: linux-musl-arm64
   #           platform: linux/arm64
-  #           tag: 9.0-alpine-aot-arm64v8
+  #           tag: 10.0-preview-alpine-aot-arm64v8
   #         - target: linux-arm64
   #           name: linux-arm64
   #           platform: linux/arm64
-  #           tag: 9.0-noble-aot-arm64v8
+  #           tag: 10.0-preview-noble-aot-arm64v8
   #     <<: *no-fail-fast-strategy
   
   #   runs-on: macos-latest
@@ -90,7 +90,7 @@ jobs:
           - target: linux-musl-x64
             name: linux-musl-x64
             platform: linux/amd64
-            tag: 9.0-alpine-aot-amd64
+            tag: 10.0-preview-alpine-aot-amd64
 
       <<: *no-fail-fast-strategy
 

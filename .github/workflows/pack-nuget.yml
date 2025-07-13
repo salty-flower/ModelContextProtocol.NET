@@ -1,0 +1,47 @@
+name: Pack NuGet packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "Package.props"
+      - ".github/real-workflows/pack-nuget.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: "Pack NuGet packages"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9 and 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9
+            10
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: "nuget-packages"
+          path: |
+            ./artifacts/nuget/*.nupkg
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Pack solution
+        shell: pwsh
+        run: |
+          dotnet pack `
+            --configuration "Release" `
+            -o "./artifacts/nuget" `
+            ./ModelContextProtocol.NET.sln
+
