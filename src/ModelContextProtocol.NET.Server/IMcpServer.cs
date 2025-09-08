@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using ModelContextProtocol.NET.Core.Models.Protocol.Common;
 
 namespace ModelContextProtocol.NET.Server;
@@ -23,4 +24,11 @@ public interface IMcpServer : IAsyncDisposable
     /// Stops the server.
     /// </summary>
     void Stop(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Runs the server and blocks until the cancellation token is triggered.
+    /// This is a convenience method that combines Start(), waiting for cancellation, and Stop().
+    /// </summary>
+    /// <param name="cancellationToken">Optional token to cancel server execution</param>
+    Task RunAsync(CancellationToken cancellationToken = default);
 }

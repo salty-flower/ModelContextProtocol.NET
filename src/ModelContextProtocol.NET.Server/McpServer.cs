@@ -60,6 +60,27 @@ internal class McpServer(
         logger.LogInformation("MCP server stopped");
     }
 
+    public async Task RunAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Start the server
+            Start(cancellationToken);
+
+            // Create a TaskCompletionSource to wait for cancellation
+            var tcs = new TaskCompletionSource();
+            using var registration = cancellationToken.Register(() => tcs.SetResult());
+
+            // Wait for cancellation
+            await tcs.Task;
+        }
+        finally
+        {
+            // Stop the server
+            Stop(cancellationToken);
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (!isDisposed)

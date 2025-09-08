@@ -58,11 +58,17 @@ var server = builder.Build();
 
 try
 {
+    // You can either use Start/Stop pattern:
+    /*
     server.Start();
     await Task.Delay(-1); // Wait indefinitely
+    server.Stop();
+    */
+
+    // Or use the more convenient RunAsync pattern:
+    await server.RunAsync(); // Runs until cancelled
 }
 finally
 {
-    server.Stop();
     await server.DisposeAsync();
 }
